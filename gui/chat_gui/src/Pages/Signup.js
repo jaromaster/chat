@@ -1,12 +1,12 @@
 import React from 'react'
-import axios from "axios";
-import LoginForm from '../Components/LoginForm';
-import "./Login.css";
+import SignupForm from '../Components/SignupForm'
+import axios from "axios"
+import "./Signup.css"
 
-// Login Page
-const Login = () => {
+const Signup = () => {
     let username = "";
     let password = "";
+    let repeatedPassword = "";
 
     // get username
     const handleNameInput = (e) => {
@@ -18,8 +18,13 @@ const Login = () => {
         password = e.target.value;
     }
 
+    // get repeated password
+    const handleRepeatedPasswordInput = (e) => {
+        repeatedPassword = e.target.value;
+    }
+
     // handle if user presses login button
-    const handleLogin = (e) => {
+    const handleSignup = (e) => {
         e.preventDefault();
 
         if (username === ""){
@@ -30,31 +35,29 @@ const Login = () => {
             alert("Password not valid");
             return;
         }
+        if (password !== repeatedPassword){
+            alert("Passwords do not match");
+            return;
+        }
 
         const credentials = {username: username, password: password};
-        console.log(credentials);
+        alert("valid")
 
         // send credentials to backend
-        axios.post("/logindata", credentials)
+        axios.post("/signupdata", credentials)
         .then(response => {
             console.log(response.data); // handle response
         })
     }
 
-    // handle if user presses sign up button
-    const handleSignup = (e) => {
-        e.preventDefault();
-
-        window.location.href = "/signup"; // redirect to sign up page
-    }
-
 
     return (
-        <div className="loginDiv">
-            <h1>Login Page</h1>
-            <LoginForm handleNameInput={handleNameInput} handlePasswordInput={handlePasswordInput} handleLogin={handleLogin} handleSignup={handleSignup}></LoginForm>
+        <div className="signupDiv">
+            <h1>Sign Up</h1>
+            <SignupForm handleNameInput={handleNameInput} handlePasswordInput={handlePasswordInput}
+            handleRepeatedPasswordInput={handleRepeatedPasswordInput} handleSignup={handleSignup}></SignupForm>
         </div>
     )
 }
 
-export default Login;
+export default Signup;

@@ -1,22 +1,24 @@
 import React from 'react'
-import "./LoginForm.css"
+import "./SignupForm.css"
 
 // Get user input
-const LoginForm = (props) => {
+const SignupForm = (props) => {
     return (
         <div>
-            <form className="loginForm">
+            <form className="signupForm">
                 <label htmlFor="nameInput">Username:</label><br></br>
                 <input id="nameInput" type="text" onChange={props.handleNameInput}></input><br></br>
 
                 <label htmlFor="passwdInput">Password:</label><br></br>
                 <input id="passwdInput" type="password" onChange={props.handlePasswordInput}></input><br></br>
 
-                <input type="submit" value="Login" onClick={props.handleLogin}></input>
+                <label htmlFor="passwdInput2">Repeat Password:</label><br></br>
+                <input id="passwdInput2" type="password" onChange={props.handleRepeatedPasswordInput}></input><br></br>
+
                 <input type="submit" value="Sign up" onClick={props.handleSignup}></input>
             </form>   
         </div>
     )
 }
 
-export default LoginForm;
+export default SignupForm;
