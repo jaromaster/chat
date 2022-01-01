@@ -1,0 +1,14 @@
+.loginForm {
+    width:min-content;
+    margin-left: auto;
+    margin-right: auto;
+    text-align: left;
+}
+
+.loginForm label {
+    margin-bottom: 1rem;
+}
+
+.loginForm input {
+    margin-bottom: 1rem;
+}
