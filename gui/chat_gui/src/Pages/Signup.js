@@ -48,6 +48,9 @@ const Signup = () => {
         .then(response => {
             console.log(response.data); // handle response
         })
+        .catch((err) => {
+            console.log("error: post request to /signupdata failed")
+        })
     }
 
 

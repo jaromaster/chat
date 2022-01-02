@@ -39,6 +39,9 @@ const Login = () => {
         .then(response => {
             console.log(response.data); // handle response
         })
+        .catch((err) => {
+            console.log("error: post request to /logindata failed")
+        })
     }
 
     // handle if user presses sign up button

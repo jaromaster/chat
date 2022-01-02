@@ -5,47 +5,30 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"path/filepath"
 	"time"
 
 	"github.com/gorilla/mux"
 )
 
-type spaHandler struct {
-	staticPath string
-	indexPath  string
-}
+// constants
+const dbPath = "users.db"
 
-func (s spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	path, err := filepath.Abs(r.URL.Path)
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-		return
-	}
-
-	path = filepath.Join(s.staticPath, path)
-
-	_, err = os.Stat(path)
-	if os.IsNotExist(err) {
-		http.ServeFile(w, r, filepath.Join(s.staticPath, s.indexPath))
-		return
-	} else if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
-		return
-	}
-
-	http.FileServer(http.Dir(s.staticPath)).ServeHTTP(w, r)
-}
+// global variables
+var users UserDB
 
 func main() {
 	router := mux.NewRouter()
+
+	// init database
+	users = NewUserDB(dbPath)
+	users.Init()
 
 	// handle post requests
 	router.HandleFunc("/logindata", HandleLogin)
 	router.HandleFunc("/signupdata", HandleSignup)
 
-	spa := spaHandler{staticPath: "../gui/chat_gui/build", indexPath: "index.html"}
+	// static file server (for react app)
+	spa := SpaHandler{staticPath: "../gui/chat_gui/build", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
 
 	// http server
@@ -61,13 +44,8 @@ func main() {
 }
 
 // handle login attempt
-type user struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
-}
-
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
-	var u user
+	var u User
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
@@ -79,11 +57,17 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// print user
 	fmt.Println(u)
+
+	// check if password is correct
+	correct := users.CheckPassword(u)
+	fmt.Println("password of user "+u.Username+" is correct: ", correct)
+
+	// login
 }
 
 // handle sign ups
 func HandleSignup(w http.ResponseWriter, r *http.Request) {
-	var u user
+	var u User
 
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
@@ -97,4 +81,14 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	fmt.Println("New User: ", u)
 
 	// persist user and password (database/file)
+	err = users.StoreUser(u)
+	if err != nil {
+		fmt.Println(err)
+		fmt.Println(u, "could not be stored to db")
+		return
+	}
+
+	fmt.Println("stored user: " + u.Username)
+
+	// redirect to login page
 }
