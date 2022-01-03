@@ -33,11 +33,6 @@ const Login = () => {
 
         const credentials = {username: username, password: password};
 
-        // login failed
-        let onFailedLogin = () => {
-            alert("Username or Password incorrect");
-        }
-
         // send credentials to backend
         axios.post("/logindata", credentials)
         .then(response => {
@@ -50,12 +45,11 @@ const Login = () => {
                 alert("login successful");
                 const url = response.data.path;
                 window.location.href = url;
-                console.log(response.statusText);
             }
         })
         .catch((err) => {
             // e.g. if response status code is 401 (Unautorized)
-            onFailedLogin();
+            alert("Username or Password incorrect");
         })
     }
 

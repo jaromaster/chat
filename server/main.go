@@ -86,21 +86,34 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	var u User
 
+	success := true
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 	err := decoder.Decode(&u)
 	if err != nil {
 		fmt.Println(err)
+		success = false
 		return
 	}
 
 	// persist user and password (database/file)
 	err = users.StoreUser(u)
 	if err != nil {
-		fmt.Println(err)
 		fmt.Println(u, "could not be stored to db")
+		success = false
+		return
+	}
+
+	// some error(s)
+	if !success {
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("Sign up failed"))
 		return
 	}
 
 	fmt.Println("stored user: " + u.Username)
+
+	// inform frontend about successful sign up
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte("account created"))
 }

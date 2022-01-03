@@ -1,0 +1,18 @@
+This is some basic documentation of the rest api.
+
+
+BrowserRouter (React)
+/login : Login page
+/signup : Sign up page
+/chats : temporary chats page (will be different for each user)
+
+Backend
+/ : static file server (serves react app)
+/logindata : handles POST request containing login data as json, 
+            response: 
+                status code: 201 success/ 401 invalid credentials,
+                data (json): {path: "/someurl"}
+/signupdata : handles POST request containing login data as json,
+            response:
+                status code: 201 success/ 500 sign up not successful,
+                data (text): "account created"
