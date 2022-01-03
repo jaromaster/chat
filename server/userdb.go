@@ -49,13 +49,13 @@ func (db *UserDB) StoreUser(u User) error {
 	const query string = "INSERT INTO users (username, password) VALUES (?, ?);"
 	stmt, err := db.Database.Prepare(query)
 	if err != nil {
-		fmt.Println("error: storing user (prepared statement)")
+		//fmt.Println("error: storing user (prepared statement)")
 		return err
 	}
 
 	_, err = stmt.Exec(u.Username, u.GetPasswdHash())
 	if err != nil {
-		fmt.Println(query)
+		//fmt.Println(query)
 		return err
 	}
 
@@ -67,21 +67,15 @@ func (db *UserDB) CheckPassword(u User) bool {
 	const query string = "SELECT * FROM users WHERE username=? AND password=?;"
 	stmt, err := db.Database.Prepare(query)
 	if err != nil {
-		fmt.Println("error: checking password (prepared statement)")
+		//fmt.Println("error: checking password (prepared statement)")
 		return false
 	}
 
 	res := stmt.QueryRow(u.Username, u.GetPasswdHash()) // get row
 
 	// if result empty => password or username not correct
-
 	var newUser User
-
 	err = res.Scan(&newUser.Username, &newUser.Password)
-	if errors.Is(err, sql.ErrNoRows) {
-		fmt.Println("error: checking password (executing query)")
-		return false
-	}
 
-	return true
+	return !errors.Is(err, sql.ErrNoRows)
 }

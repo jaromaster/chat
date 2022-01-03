@@ -32,15 +32,30 @@ const Login = () => {
         }
 
         const credentials = {username: username, password: password};
-        console.log(credentials);
+
+        // login failed
+        let onFailedLogin = () => {
+            alert("Username or Password incorrect");
+        }
 
         // send credentials to backend
         axios.post("/logindata", credentials)
         .then(response => {
-            console.log(response.data); // handle response
+            // backend responds with json
+            // {path: "/someurl"}
+
+            // successful
+            // redirect to url return from backend
+            if(response.status === 201) {
+                alert("login successful");
+                const url = response.data.path;
+                window.location.href = url;
+                console.log(response.statusText);
+            }
         })
         .catch((err) => {
-            console.log("error: post request to /logindata failed")
+            // e.g. if response status code is 401 (Unautorized)
+            onFailedLogin();
         })
     }
 

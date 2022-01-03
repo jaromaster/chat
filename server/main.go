@@ -55,14 +55,31 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// print user
-	fmt.Println(u)
-
 	// check if password is correct
 	correct := users.CheckPassword(u)
 	fmt.Println("password of user "+u.Username+" is correct: ", correct)
 
-	// login
+	// inform frontend about failed login
+	if !correct {
+		w.WriteHeader(http.StatusUnauthorized)
+		w.Write([]byte("Login failed, Username or Password incorrect"))
+		return
+	}
+
+	// login (return path to chats of user)
+
+	// for now, just general chats page
+	w.WriteHeader(http.StatusCreated)
+	w.Header().Set("Content-Type", "application/json")
+	resp := make(map[string]string)
+	resp["path"] = "/chats"
+	jsonResp, err := json.Marshal(resp)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	w.Write(jsonResp)
 }
 
 // handle sign ups
@@ -77,9 +94,6 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// print user
-	fmt.Println("New User: ", u)
-
 	// persist user and password (database/file)
 	err = users.StoreUser(u)
 	if err != nil {
@@ -89,6 +103,4 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	}
 
 	fmt.Println("stored user: " + u.Username)
-
-	// redirect to login page
 }
