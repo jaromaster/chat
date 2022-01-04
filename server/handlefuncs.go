@@ -24,8 +24,7 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 
 	// inform frontend about failed login
 	if !correct {
-		w.WriteHeader(http.StatusUnauthorized)
-		w.Write([]byte("Login failed, Username or Password incorrect"))
+		writeText(w, http.StatusUnauthorized, []byte("login failed, username or password incorrect"))
 		return
 	}
 
@@ -62,8 +61,7 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	// check if user already exists
 	exists := users.CheckUserExists(u)
 	if exists {
-		w.WriteHeader(http.StatusConflict)
-		w.Write([]byte("user already exists"))
+		writeText(w, http.StatusConflict, []byte("user already exists"))
 		return
 	}
 
@@ -75,18 +73,16 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// some error(s)
+	// error(s)
 	if !success {
-		w.WriteHeader(http.StatusInternalServerError)
-		w.Write([]byte("Sign up failed"))
+		writeText(w, http.StatusInternalServerError, []byte("sign up failed"))
 		return
 	}
 
 	fmt.Println("stored user: " + u.Username)
 
 	// inform frontend about successful sign up
-	w.WriteHeader(http.StatusCreated)
-	w.Write([]byte("account created"))
+	writeText(w, http.StatusCreated, []byte("account created"))
 }
 
 // check if given user (json: {username: "someusername"}) exists
@@ -106,10 +102,17 @@ func HandleCheckUserExists(w http.ResponseWriter, r *http.Request) {
 
 	// send response
 	if !exists {
-		w.WriteHeader(http.StatusNotFound)
-		w.Write([]byte("user not found"))
+		writeText(w, http.StatusNotFound, []byte("user not found"))
 	} else {
-		w.WriteHeader(http.StatusOK)
-		w.Write([]byte("user found"))
+		writeText(w, http.StatusOK, []byte("user found"))
+	}
+}
+
+// simple function to send text to frontend
+func writeText(w http.ResponseWriter, code int, message []byte) {
+	w.WriteHeader(code)
+	_, err := w.Write(message)
+	if err != nil {
+		fmt.Println(err)
 	}
 }

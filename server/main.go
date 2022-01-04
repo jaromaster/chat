@@ -19,7 +19,10 @@ func main() {
 
 	// init user database
 	users = NewUserDB(dbPath)
-	users.Init()
+	err := users.Init()
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	// handle post requests
 	router.HandleFunc("/logindata", HandleLogin)

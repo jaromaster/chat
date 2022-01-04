@@ -5,6 +5,8 @@ import './index.css';
 import Login from './Pages/Login';
 import Chats from './Pages/Chats';
 import Signup from './Pages/Signup';
+import NoPage from './Pages/NoPage';
+import DirectChat from './Pages/DirectChat';
 
 ReactDOM.render(
   <React.StrictMode>
@@ -14,7 +16,8 @@ ReactDOM.render(
         <Route path="login" element={<Login></Login>}></Route>
         <Route path="signup" element={<Signup></Signup>}></Route>
         <Route path="chats" element={<Chats></Chats>}></Route>
-        {/* <Route path="*" element={<NoPage />} />  ERROR (404)*/}
+        <Route path="directchat" element={<DirectChat></DirectChat>}></Route>
+        <Route path="*" element={<NoPage />} />  {/*ERROR (404)*/}
       </Routes>
     </BrowserRouter>
     
