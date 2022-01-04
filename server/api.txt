@@ -16,3 +16,7 @@ Backend
             response:
                 status code: 201 success/ 500 sign up not successful,
                 data (text): "account created"
+/userexists : handles POST request containing username (json),
+            response:
+                status code: 200 success/ 404 user not found
+                data (text): "user found" / "user not found"

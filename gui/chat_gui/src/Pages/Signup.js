@@ -56,7 +56,8 @@ const Signup = () => {
             }
         })
         .catch((err) => {
-            alert("Something went wrong, please try again!");
+            // server response: 409 (status conflict)
+            alert("Username already taken!");
             console.log("error: post request to /signupdata failed")
         })
     }

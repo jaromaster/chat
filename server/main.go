@@ -19,13 +19,14 @@ var users UserDB
 func main() {
 	router := mux.NewRouter()
 
-	// init database
+	// init user database
 	users = NewUserDB(dbPath)
 	users.Init()
 
 	// handle post requests
 	router.HandleFunc("/logindata", HandleLogin)
 	router.HandleFunc("/signupdata", HandleSignup)
+	router.HandleFunc("/userexists", HandleCheckUserExists)
 
 	// static file server (for react app)
 	spa := SpaHandler{staticPath: "../gui/chat_gui/build", indexPath: "index.html"}
@@ -96,6 +97,14 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// check if user already exists
+	exists := users.CheckUserExists(u)
+	if exists {
+		w.WriteHeader(http.StatusConflict)
+		w.Write([]byte("user already exists"))
+		return
+	}
+
 	// persist user and password (database/file)
 	err = users.StoreUser(u)
 	if err != nil {
@@ -116,4 +125,29 @@ func HandleSignup(w http.ResponseWriter, r *http.Request) {
 	// inform frontend about successful sign up
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte("account created"))
+}
+
+// check if given user (json: {username: "someusername"}) exists
+func HandleCheckUserExists(w http.ResponseWriter, r *http.Request) {
+	var u User
+
+	decoder := json.NewDecoder(r.Body)
+	err := decoder.Decode(&u)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	// check if exists
+	exists := users.CheckUserExists(u)
+	fmt.Println("user already exists: ", exists)
+
+	// send response
+	if !exists {
+		w.WriteHeader(http.StatusNotFound)
+		w.Write([]byte("user not found"))
+	} else {
+		w.WriteHeader(http.StatusOK)
+		w.Write([]byte("user found"))
+	}
 }

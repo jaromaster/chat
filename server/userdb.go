@@ -79,3 +79,18 @@ func (db *UserDB) CheckPassword(u User) bool {
 
 	return !errors.Is(err, sql.ErrNoRows)
 }
+
+func (db *UserDB) CheckUserExists(u User) bool {
+	const query string = "SELECT * FROM users WHERE username=?;"
+	stmt, err := db.Database.Prepare(query)
+	if err != nil {
+		fmt.Println(err)
+		return false
+	}
+	res := stmt.QueryRow(u.Username)
+
+	var newUser User
+	err = res.Scan(&newUser.Username)
+
+	return !errors.Is(err, sql.ErrNoRows)
+}
