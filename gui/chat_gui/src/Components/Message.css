@@ -1,0 +1,15 @@
+.message {
+    border-radius: 1rem;
+    padding: 5px;
+    margin: 5px;
+}
+
+.message h4 {
+    margin-top: auto;
+}
+
+.messageTextDiv {
+    border-radius: 1rem;
+    padding: 5px;
+    width: fit-content;
+}

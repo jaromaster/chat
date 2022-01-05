@@ -1,0 +1,12 @@
+.messagesDiv {
+    max-height: 65vh;
+    min-height: 50%;
+    border-top: 1px solid black; /*for testing */
+    border-bottom: 1px solid black; /*for testing */
+    overflow-y: auto;
+}
+
+.messagesDiv ul {
+    padding-left: 5px;
+    display: grid;
+}

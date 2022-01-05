@@ -5,6 +5,7 @@ BrowserRouter (React)
 /login : Login page
 /signup : Sign up page
 /chats : temporary chats page (will be different for each user)
+/directchat : chat between to users
 
 Backend
 / : static file server (serves react app)
