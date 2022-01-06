@@ -1,0 +1,17 @@
+.writeMessageDiv {
+    /* min-height: 5%; */
+    flex-grow: 1;
+    display: flex;
+    margin: 2px;
+}
+
+.writeMessageDiv input {
+    flex-basis: 90%;
+    flex-direction: column;
+    font-size: 100%;
+}
+
+.writeMessageDiv button {
+    flex-basis: 10%;
+    font-size: 100%;
+}

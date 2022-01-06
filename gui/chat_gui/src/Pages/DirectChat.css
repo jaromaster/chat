@@ -6,4 +6,7 @@
     border-radius: 10px;
     height: 80vh;
     text-align: center;
+    overflow: auto;
+    display: flex;
+    flex-direction: column;
 }
