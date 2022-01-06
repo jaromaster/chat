@@ -7,7 +7,7 @@ import WriteMessage from '../Components/WriteMessage';
 const DirectChat = (props) => {
     const otherUser = "Some other user";
     let newMessage = "";
-    let ws = new WebSocket("ws://localhost:8000/sendmessage");
+    let ws = new WebSocket(`ws://${window.location.host}/sendmessage`);
 
     // close websocket if still open and page reloaded
     window.onbeforeunload = () => {
