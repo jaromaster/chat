@@ -1,5 +1,5 @@
 .writeMessageDiv {
-    /* min-height: 5%; */
+    max-height: 5%;
     flex-grow: 1;
     display: flex;
     margin: 2px;

@@ -4,6 +4,8 @@ import "./Message.css";
 // a single message to display time, date, text
 const Message = (props) => {
     let message = props.message;
+    const username = props.username; // name of own user
+    // const otherUser = props.otherUser; // name of other user
 
     // message colors
     const sentMessageColor = "#37dce8";
@@ -11,7 +13,7 @@ const Message = (props) => {
 
     // sender is self: green, else blue
     let backgroundColor = sentMessageColor;
-    if (message.sender === "self") {
+    if (message.from === username) {
         backgroundColor = recvMessageColor;
     }
 
@@ -20,11 +22,11 @@ const Message = (props) => {
 
     return (
         <div className="message" 
-        style={{textAlign: message.sender === "self" ? "right" : "left"}}>
+        style={{textAlign: message.from === username ? "right" : "left"}}>
 
             <div className="messageTextDiv" style={{
                 backgroundColor: backgroundColor, 
-                float: message.sender === "self" ? "right" : "left"}}>
+                float: message.from === username ? "right" : "left"}}>
                 <h4>{message.date}, {shortTime}</h4>
                 <p>{message.text}</p>
             </div>
