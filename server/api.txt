@@ -21,3 +21,4 @@ Backend
             response:
                 status code: 200 success/ 404 user not found
                 data (text): "user found" / "user not found"
+/sendmessage : handles messages sent over websocket

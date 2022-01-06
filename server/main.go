@@ -1,18 +1,22 @@
 package main
 
 import (
+	"fmt"
 	"log"
 	"net/http"
 	"time"
 
 	"github.com/gorilla/mux"
+	"github.com/gorilla/websocket"
 )
 
 // constants
 const dbPath = "users.db"
+const PORT = 8000
 
 // global variables
 var users UserDB
+var upgrader websocket.Upgrader
 
 func main() {
 	router := mux.NewRouter()
@@ -24,10 +28,18 @@ func main() {
 		log.Fatal(err)
 	}
 
+	// websocket
+	upgrader = websocket.Upgrader{}
+	// NOT SECURE - FIX!
+	upgrader.CheckOrigin = func(r *http.Request) bool {
+		return true
+	}
+
 	// handle post requests
 	router.HandleFunc("/logindata", HandleLogin)
 	router.HandleFunc("/signupdata", HandleSignup)
 	router.HandleFunc("/userexists", HandleCheckUserExists)
+	router.HandleFunc("/sendmessage", handleMessageSocket)
 
 	// static file server (for react app)
 	spa := SpaHandler{staticPath: "../gui/chat_gui/build", indexPath: "index.html"}
@@ -36,7 +48,7 @@ func main() {
 	// http server
 	s := &http.Server{
 		Handler: router,
-		Addr:    "127.0.0.1:8000",
+		Addr:    fmt.Sprintf(":%d", PORT),
 		// timeouts
 		WriteTimeout: 10 * time.Second,
 		ReadTimeout:  10 * time.Second,
