@@ -16,7 +16,7 @@ const DirectChat = () => {
         {from: username, to: otherUser, text: "i'm fine thx", date: "2021-01-5", time: "20:30:00"},
     ]);
     let newMessage = "";
-    let ws = new WebSocket(`ws://${window.location.host}/sendmessage`);
+    let ws = new WebSocket(`wss://${window.location.host}/sendmessage`);
 
     // close websocket if still open and page reloaded
     window.onbeforeunload = () => {

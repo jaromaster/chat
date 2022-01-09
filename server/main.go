@@ -13,6 +13,8 @@ import (
 // constants
 const dbPath = "users.db"
 const PORT = 8000
+const CERTPATH = "tls/chat-server.crt"
+const KEYPATH = "tls/chat-server.key"
 
 // global variables
 var users UserDB
@@ -28,7 +30,7 @@ func main() {
 		log.Fatal(err)
 	}
 
-	// websocket
+	// upgrades to websocket
 	upgrader = websocket.Upgrader{}
 	// NOT SECURE - FIX!
 	upgrader.CheckOrigin = func(r *http.Request) bool {
@@ -45,7 +47,7 @@ func main() {
 	spa := SpaHandler{staticPath: "../gui/chat_gui/build", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
 
-	// http server
+	// https server
 	s := &http.Server{
 		Handler: router,
 		Addr:    fmt.Sprintf(":%d", PORT),
@@ -54,5 +56,11 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 	}
 
-	log.Fatal(s.ListenAndServe())
+	// handle ctrl+c
+	HandleClosed(s)
+
+	err = s.ListenAndServeTLS(CERTPATH, KEYPATH)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
