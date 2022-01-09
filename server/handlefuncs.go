@@ -3,8 +3,19 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
+	"io/ioutil"
 	"net/http"
+	"time"
+
+	"github.com/dgrijalva/jwt-go"
 )
+
+// struct containing claims (for token)
+type tokenClaims struct {
+	Username string `json:"username"`
+	jwt.StandardClaims
+}
 
 // handle login attempt
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
@@ -28,20 +39,35 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// login (return path to chats of user)
+	// JWT ----------------------
 
-	// for now, just general chats page
-	w.WriteHeader(http.StatusCreated)
-	w.Header().Set("Content-Type", "application/json")
-	resp := make(map[string]string)
-	resp["path"] = "/chats"
-	jsonResp, err := json.Marshal(resp)
+	// create token claims
+	claims := tokenClaims{
+		Username: u.Username,
+		StandardClaims: jwt.StandardClaims{
+			Issuer:    "chat", // this website
+			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
+		},
+	}
+
+	// create jwt token for user
+	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+
+	// read in private key
+	privateKey, err := ioutil.ReadFile(KEYPATH)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	// sign token with private key
+	signedToken, err := token.SignedString(privateKey)
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
-	w.Write(jsonResp)
+	// send token to user
+	writeText(w, http.StatusAccepted, []byte(signedToken))
 }
 
 // handle sign ups
@@ -108,6 +134,61 @@ func HandleCheckUserExists(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+// check if token is valid and return username
+func ValidateToken(token []byte) string {
+	// parse token from bytes
+	parsedToken, err := jwt.ParseWithClaims(string(token[:]), &tokenClaims{},
+		func(t *jwt.Token) (interface{}, error) {
+			key, err := ioutil.ReadFile(KEYPATH) // get private key
+			return key, err
+		},
+	)
+	if err != nil {
+		fmt.Println(err)
+		return ""
+	}
+	// parse claims
+	claims, ok := parsedToken.Claims.(*tokenClaims)
+	if !ok {
+		fmt.Println("parsing claims not ok")
+		return ""
+	}
+
+	// check for expiration
+	if claims.ExpiresAt < time.Now().UTC().Unix() {
+		fmt.Println("token expired")
+		return ""
+	}
+
+	username := claims.Username
+	fmt.Println("Username [", username, "] sent token to get his chats")
+	return username
+}
+
+// send chat of specific user to frontend
+func HandleGetUserChat(w http.ResponseWriter, r *http.Request) {
+	tokenBytes, err := io.ReadAll(r.Body)
+	if err != nil {
+		return
+	}
+
+	// validate token
+	username := ValidateToken(tokenBytes)
+	if username == "" {
+		writeText(w, http.StatusUnauthorized, []byte("invalid token"))
+		return
+	}
+
+	jsonMap := make(map[string]interface{})
+	jsonMap["username"] = username
+	jsonMap["chats"] = [4]string{"user1", "user2", "uesr3", "user4"} // add list of chats (for now just dummy data) to map
+	writeJSON(w, http.StatusAccepted, jsonMap)
+
+	// writeText(w, http.StatusAccepted, []byte(username+", here are your chats:")) // send chats
+	// get all chats of user (read from file system)
+	// send chats as json
+}
+
 // simple function to send text to frontend
 func writeText(w http.ResponseWriter, code int, message []byte) {
 	w.WriteHeader(code)
@@ -115,4 +196,17 @@ func writeText(w http.ResponseWriter, code int, message []byte) {
 	if err != nil {
 		fmt.Println(err)
 	}
+}
+
+// send json to frontend
+func writeJSON(w http.ResponseWriter, code int, jsonMap map[string]interface{}) {
+	w.WriteHeader(code)
+	w.Header().Set("Content-Type", "application/json")
+	jsonBytes, err := json.Marshal(jsonMap)
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+
+	w.Write(jsonBytes)
 }

@@ -22,3 +22,7 @@ Backend
                 status code: 200 success/ 404 user not found
                 data (text): "user found" / "user not found"
 /sendmessage : handles messages sent over websocket
+/getuserchat : handles POST request containing jwt (base64),
+            response:
+                status code: 202 success/ 401 invalid token,
+                data (json): {username: "name", chats: ["chat1", "chat2" ...]}

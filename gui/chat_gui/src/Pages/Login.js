@@ -7,6 +7,7 @@ import "./Login.css";
 const Login = () => {
     let username = "";
     let password = "";
+    let token = "";
 
     // get username
     const handleNameInput = (e) => {
@@ -36,15 +37,15 @@ const Login = () => {
         // send credentials to backend
         axios.post("/logindata", credentials)
         .then(response => {
-            // backend responds with json
-            // {path: "/someurl"}
+            // backend responds with token
 
-            // successful
-            // redirect to url return from backend
-            if(response.status === 201) {
+            // get jwt token in return
+            if(response.status === 202) {
                 alert("login successful");
-                const url = response.data.path;
-                window.location.href = url;
+                token = response.data;
+
+                document.cookie = token; // set cookie to token
+                window.location.href = "/chats";
             }
         })
         .catch((err) => {

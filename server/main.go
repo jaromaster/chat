@@ -41,6 +41,9 @@ func main() {
 	router.HandleFunc("/logindata", HandleLogin)
 	router.HandleFunc("/signupdata", HandleSignup)
 	router.HandleFunc("/userexists", HandleCheckUserExists)
+	router.HandleFunc("/getuserchat", HandleGetUserChat)
+
+	// handle websocket(s)
 	router.HandleFunc("/sendmessage", handleMessageSocket)
 
 	// static file server (for react app)
