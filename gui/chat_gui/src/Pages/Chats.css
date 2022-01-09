@@ -7,3 +7,10 @@
     height: 80vh;
     text-align: center;
 }
+
+.chatsDiv ul {
+    list-style-type: none;
+    margin-left: auto;
+    margin-right: auto;
+    width: 50%;
+}

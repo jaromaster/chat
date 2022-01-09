@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import axios from "axios";
 import NewChat from '../Components/NewChat';
 import "./Chats.css";
+import ChatListElement from '../Components/ChatListElement';
 
 // Display user's chats
 const Chats = () => {
@@ -42,9 +43,17 @@ const Chats = () => {
         .then(response => {
             // user exists -> start new chat
             if (response.data === "user found"){
-                alert("User found");
-                // redirect
-                console.log(document.cookie)
+                // alert("User found");
+
+                let chatSet = new Set(chats);
+                if(!chatSet.has(username) && username !== ownUsername){ // if not in chats and not own name
+                    // add user to chats
+                    let newChats = [...chats];
+                    newChats.push(username);
+                    setChats(newChats);
+
+                    // send chat to server for persistance
+                }
             }
         })
         .catch(err => {
@@ -60,7 +69,7 @@ const Chats = () => {
             <ul>
             {
                 chats.map((e,i)=>{
-                    return <li key={i}>{e}</li> //display chats
+                    return <li key={i}><ChatListElement name={e}></ChatListElement></li> //display chats
                 })
             }
             </ul>

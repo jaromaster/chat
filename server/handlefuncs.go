@@ -124,7 +124,7 @@ func HandleCheckUserExists(w http.ResponseWriter, r *http.Request) {
 
 	// check if exists
 	exists := users.CheckUserExists(u)
-	fmt.Println("user already exists: ", exists)
+	fmt.Println("user exists: ", exists)
 
 	// send response
 	if !exists {
@@ -181,7 +181,7 @@ func HandleGetUserChat(w http.ResponseWriter, r *http.Request) {
 
 	jsonMap := make(map[string]interface{})
 	jsonMap["username"] = username
-	jsonMap["chats"] = [4]string{"user1", "user2", "uesr3", "user4"} // add list of chats (for now just dummy data) to map
+	jsonMap["chats"] = [4]string{"user1", "user2", "user3", "user4"} // add list of chats (for now just dummy data) to map
 	writeJSON(w, http.StatusAccepted, jsonMap)
 
 	// writeText(w, http.StatusAccepted, []byte(username+", here are your chats:")) // send chats

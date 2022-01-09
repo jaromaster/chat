@@ -8,11 +8,11 @@ BrowserRouter (React)
 /directchat : chat between to users
 
 Backend
-/ : static file server (serves react app)
+/ : static file server (serves react app), redirect to /login
 /logindata : handles POST request containing login data as json, 
             response: 
                 status code: 201 success/ 401 invalid credentials,
-                data (json): {path: "/someurl"}
+                data (text): jwt
 /signupdata : handles POST request containing login data as json,
             response:
                 status code: 201 success/ 500 sign up not successful,
