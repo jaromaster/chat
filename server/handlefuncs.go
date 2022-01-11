@@ -21,6 +21,7 @@ type tokenClaims struct {
 func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	var u User
 
+	// read request body as json, store in u (user)
 	decoder := json.NewDecoder(r.Body)
 	decoder.DisallowUnknownFields()
 	err := decoder.Decode(&u)
@@ -45,8 +46,8 @@ func HandleLogin(w http.ResponseWriter, r *http.Request) {
 	claims := tokenClaims{
 		Username: u.Username,
 		StandardClaims: jwt.StandardClaims{
-			Issuer:    "chat", // this website
-			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(),
+			Issuer:    "chat",                               // this website
+			ExpiresAt: time.Now().Add(1 * time.Hour).Unix(), // Expires 1h from now
 		},
 	}
 
@@ -124,7 +125,6 @@ func HandleCheckUserExists(w http.ResponseWriter, r *http.Request) {
 
 	// check if exists
 	exists := users.CheckUserExists(u)
-	fmt.Println("user exists: ", exists)
 
 	// send response
 	if !exists {
@@ -184,7 +184,6 @@ func HandleGetUserChat(w http.ResponseWriter, r *http.Request) {
 	jsonMap["chats"] = [4]string{"user1", "user2", "user3", "user4"} // add list of chats (for now just dummy data) to map
 	writeJSON(w, http.StatusAccepted, jsonMap)
 
-	// writeText(w, http.StatusAccepted, []byte(username+", here are your chats:")) // send chats
 	// get all chats of user (read from file system)
 	// send chats as json
 }
@@ -208,5 +207,8 @@ func writeJSON(w http.ResponseWriter, code int, jsonMap map[string]interface{}) 
 		return
 	}
 
-	w.Write(jsonBytes)
+	_, err = w.Write(jsonBytes)
+	if err != nil {
+		fmt.Println(err)
+	}
 }

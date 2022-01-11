@@ -6,7 +6,7 @@ import (
 	"path/filepath"
 )
 
-// stores paths for static file server
+// stores paths for static file server (single page application)
 type SpaHandler struct {
 	staticPath string
 	indexPath  string

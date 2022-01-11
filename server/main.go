@@ -15,6 +15,8 @@ const dbPath = "users.db"
 const PORT = 8000
 const CERTPATH = "tls/chat-server.crt"
 const KEYPATH = "tls/chat-server.key"
+const STATICPATH = "../gui/chat_gui/build" // path to react app
+const INDEXPATH = "index.html"             // path of index.html (react app)
 
 // global variables
 var users UserDB
@@ -47,17 +49,13 @@ func main() {
 	router.HandleFunc("/sendmessage", handleMessageSocket)
 
 	// static file server (for react app)
-	spa := SpaHandler{staticPath: "../gui/chat_gui/build", indexPath: "index.html"}
+	spa := SpaHandler{staticPath: STATICPATH, indexPath: INDEXPATH}
 	router.PathPrefix("/").Handler(spa)
 
 	// https server
-	s := &http.Server{
-		Handler: router,
-		Addr:    fmt.Sprintf(":%d", PORT),
-		// timeouts
-		WriteTimeout: 10 * time.Second,
-		ReadTimeout:  10 * time.Second,
-	}
+	s := &http.Server{Handler: router, Addr: fmt.Sprintf(":%d", PORT)}
+	s.WriteTimeout = 10 * time.Second
+	s.ReadTimeout = 10 * time.Second
 
 	// handle ctrl+c
 	HandleClosed(s)
